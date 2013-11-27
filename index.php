@@ -14,14 +14,23 @@
 	//get mileage rates
 	$mileagerates = simplexml_load_file('http://open.dapper.net/RunDapp?dappName=FederalMileageRates&v=1&applyToUrl=http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FBusiness_mileage_reimbursement_rate&filter=true');
 	
-	//TODO: write date lookup code, currently hardcoded to 2013
-	$ratedate = $mileagerates->Rates[25]->Year;
-	$rateamount = substr($mileagerates->Rates[25]->Rate, 0, 4);
+	//lookup current year and get applicable rate
+	$year =  $mileagerates->xpath("//*[Year=$yearnow]");
+	$rate = substr($year[0]->Rate, 0, 4);  
+    
+    //set year and rate
+    $ratedate = $year[0]->Year;
+	$rateamount = $rate;
+	    
+   	//hardcoded to 2013 for testing     	
+	//$ratedate = $mileagerates->Rates[25]->Year;
+	//$rateamount = substr($mileagerates->Rates[25]->Rate, 0, 4);
 	
-	if ($yearnow == $ratedate) {
+	if (isset($ratedate) && $yearnow == $ratedate) {
 			$currentyear = $ratedate;
 			$currentamount = $rateamount / 100;
 	} else {
+		$ratedate = "Not Found";
 		$currentyear = "";
 		$currentamount = 0;
 	}
